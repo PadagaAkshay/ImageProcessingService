@@ -17,10 +17,11 @@ public class ImageService {
             Files.createDirectories(root);
 
         }
-        String fileName=System.currentTimeMillis()+' '+file.getOriginalFilename();
-
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
-        BufferedImage thumbnail = Scalr.resize(originalImage,300);
+        BufferedImage grayImage=Scalr.apply(originalImage,Scalr.OP_GRAYSCALE);
+        BufferedImage thumbnail = Scalr.resize(grayImage,300);
+        String fileName="gray"+System.currentTimeMillis()+' '+file.getOriginalFilename();
+
         Path filePath = this.root.resolve(fileName);
 
         ImageIO.write(thumbnail,"jpg",filePath.toFile());
