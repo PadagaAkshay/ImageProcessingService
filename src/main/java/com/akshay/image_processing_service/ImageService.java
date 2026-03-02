@@ -20,7 +20,7 @@ public class ImageService {
         BufferedImage originalImage = ImageIO.read(file.getInputStream());
         BufferedImage grayImage=Scalr.apply(originalImage,Scalr.OP_GRAYSCALE);
         BufferedImage thumbnail = Scalr.resize(grayImage,300);
-        String fileName="gray"+System.currentTimeMillis()+' '+file.getOriginalFilename();
+        String fileName="gray"+System.currentTimeMillis()+'_'+file.getOriginalFilename();
 
         Path filePath = this.root.resolve(fileName);
 
