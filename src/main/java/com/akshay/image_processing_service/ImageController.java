@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/images")
@@ -23,6 +25,17 @@ public class ImageController {
         } catch(Exception e){
             return ResponseEntity.internalServerError().body("FAILED"+e.getMessage());
         }
+    }
+
+    @GetMapping("/list")
+    public ResponseEntity<List<ImageMetadata>> listImages(){
+        try{
+            List<ImageMetadata> images=imageService.getAllImages();
+            return ResponseEntity.ok(images);
+        } catch(IOException e) {
+            return ResponseEntity.internalServerError().build();
+        }
+
     }
 
     @GetMapping("/view/{newfileName}")
