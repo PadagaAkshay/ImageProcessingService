@@ -8,6 +8,8 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -38,18 +40,34 @@ public class ImageController {
 
     }
 
-    @GetMapping("/view/{newfileName}")
+    @GetMapping("/view/{newfileName:.+}")
     public ResponseEntity<FileSystemResource> getImage(@PathVariable String newfileName){
         try{
-            File file=new File("uploads/"+newfileName);
+            Path filePath= Paths.get(System.getProperty("user.dir")).resolve("uploads").resolve(newfileName);
+            File file=filePath.toFile();
+            System.out.println("Looking for file at: " + file.getAbsolutePath());
             if(!file.exists()){
                 return ResponseEntity.notFound().build();
             }
+            String contentType=java.nio.file.Files.probeContentType(filePath);
+            if(contentType==null){
+                contentType="image/jpeg";
+            }
             return ResponseEntity.ok()
-                    .contentType(MediaType.IMAGE_JPEG)
+                    .contentType(MediaType.parseMediaType(contentType))
                     .body(new FileSystemResource(file));
         }catch(Exception e){
             return ResponseEntity.internalServerError().build();
+        }
+    }
+    @DeleteMapping("/delete/{fileName}")
+    public ResponseEntity<String> deleteImage(@PathVariable String fileName){
+        boolean isDeleted= imageService.deleteImage(fileName);
+        if(isDeleted){
+            return ResponseEntity.ok("File deleted Successfully");
+        }
+        else{
+            return ResponseEntity.status(404).body("File not found or could'nt delete");
         }
     }
 
